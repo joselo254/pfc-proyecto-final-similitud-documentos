@@ -97,4 +97,51 @@ class SimilitudTest extends AnyFunSuite {
     assert(detectarDirecto(c1, 3, 0.2, 5) == detectarConIndice(c1, 3, 0.2, 5))
     assert(detectarDirecto(c2, 3, 0.3, 5) == detectarConIndice(c2, 3, 0.3, 5))
   }
+  //Pruebas funcion N°1 adicionales ----
+  test("normalizar: texto mixto con mayúsculas, tildes y signos de puntuación") {
+    val texto = "Mi Tio Esta ..¡en el sofá!"
+    assert(normalizar(texto) == Vector("mi", "tio", "esta", "en", "el", "sofá"))
+  }
+
+  test("normalizar: espacios múltiples, tabulaciones y saltos de línea") {
+    val texto = "   Hola,   mundo!\n¿Cómo   estás?   "
+    assert(normalizar(texto) == Vector("hola", "mundo", "cómo", "estás"))
+  }
+
+  test("normalizar: inclusión de números y separación por símbolos especiales") {
+    val texto = "Artículo 123 - versión_final.txt"
+    assert(normalizar(texto) == Vector("artículo", "123", "versión", "final", "txt"))
+  }
+
+  test("normalizar: cadena vacía o con solo símbolos y puntuación") {
+    val texto = "... ¡?! - ,,, "
+    assert(normalizar(texto) == Vector())
+  }
+
+  test("normalizar: texto que ya está completamente limpio y en minúsculas") {
+    val texto = "programacion funcional y concurrente"
+    assert(normalizar(texto) == Vector("programacion", "funcional", "y", "concurrente"))
+  }
+
+  //Pruebas funcion N°2 adicionales ----
+  test("fragmentos: documento menor que k devuelve vacío") {
+    val ts = Vector("hola")
+    assert(fragmentos(ts, 3) == Vector())
+  }
+  test("fragmentos:si k es menor a 1 devuelve vacio"){
+    val ts=Vector("hola","como","estas")
+    assert(fragmentos(ts,-1)==Vector())
+  }
+  test("fragmentos:vector vacio"){
+    val ts=Vector()
+    assert(fragmentos(ts,2)==Vector())
+  }
+  test("fragmentos:cantidad de palabras igual a k"){
+    val ts=Vector("hola","como","estas")
+    assert(fragmentos(ts,3)==Vector(Vector("hola","como","estas")))
+  }
+  test("fragmentos: k = 1 devuelve cada palabra individual como un fragmento") {
+    val ts = Vector("uno", "dos", "tres")
+    assert(fragmentos(ts, 1) == Vector(Vector("uno"), Vector("dos"), Vector("tres")))
+  }
 }
