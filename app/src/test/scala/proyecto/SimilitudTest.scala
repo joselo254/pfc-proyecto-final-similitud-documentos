@@ -144,4 +144,64 @@ class SimilitudTest extends AnyFunSuite {
     val ts = Vector("uno", "dos", "tres")
     assert(fragmentos(ts, 1) == Vector(Vector("uno"), Vector("dos"), Vector("tres")))
   }
+  //Pruebas funcion N°3 adicionales ----
+  test("huella: elimina fragmentos duplicados si el texto repite secuencias") {
+    val doc: Documento = ("doc_rep", Vector("hola", "mundo", "hola", "mundo"))
+    val h = huella(doc, 2)
+    assert(h.size == 2)
+    assert(h == Set(Vector("hola", "mundo"), Vector("mundo", "hola")))
+  }
+
+  test("huella: documento con tamaño menor a k devuelve un Set vacío") {
+    val doc: Documento = ("doc_corto", Vector("un", "texto"))
+    val h = huella(doc, 3)
+    assert(h.isEmpty)
+  }
+  test("huella: con k = 1 cada palabra única se convierte en un fragmento unitario") {
+    val doc: Documento = ("doc_k1", Vector("gato", "perro", "gato", "ave"))
+    val h = huella(doc, 1)
+    assert(h.size == 3)
+    assert(h == Set(Vector("gato"), Vector("perro"), Vector("ave")))
+  }
+
+  test("huella: documento cuyo tamaño es exactamente igual a k genera un único fragmento") {
+    val doc: Documento = ("doc_exacto", Vector("programacion", "funcional", "scala"))
+    val h = huella(doc, 3)
+    assert(h.size == 1)
+    assert(h == Set(Vector("programacion", "funcional", "scala")))
+  }
+
+  test("huella: orden de las palabras genera fragmentos distintos en el conjunto") {
+    val doc: Documento = ("doc_orden", Vector("a", "b", "c", "b", "a"))
+    val h = huella(doc, 2)
+    assert(h.size == 4)
+  }
+  //Pruebas funcion N°4 adicionales ----
+  test("huellas: corpus vacío da vector vacío") {
+    assert(huellas(Vector(), 3).isEmpty)
+  }
+
+  test("huellas: corpus de un documento da una huella") {
+    val c = Vector(("d1", Vector("a", "b", "c")))
+    assert(huellas(c, 2).length == 1)
+  }
+
+  test("huellas: preserva el orden del corpus") {
+    val c = Vector(("d1", Vector("a", "b")), ("d2", Vector("c", "d")))
+    val hs = huellas(c, 2)
+    assert(hs(0) == huella(c(0), 2))
+    assert(hs(1) == huella(c(1), 2))
+  }
+
+  test("huellas: texto menor a k genera huella vacía") {
+    val c = Vector(("d1", Vector("a")))
+    assert(huellas(c, 3).head.isEmpty)
+  }
+
+  test("huellas: corpus duplicado da huellas iguales") {
+    val doc: Documento = ("d1", Vector("a", "b", "c"))
+    val hs = huellas(Vector(doc, doc), 2)
+    assert(hs(0) == hs(1))
+  }
+
 }

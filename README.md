@@ -19,10 +19,10 @@ nota.
 
 | Nombre completo | Código |
 |---|---|
-| jose emanuel cuervo buitrago|2559905 |
-| Jhon david ceballos yate|2559724 |
-| Sergio alejandro quintero bolivar| |
-| santiago grajales | |
+| Jose Emanuel Cuervo Buitrago|2559905-3743 |
+| Jhon David Ceballos Yate|2559724-3743 |
+| Sergio Alejandro Quintero Bolivar|2559869-3743 |
+| Santiago Grajales Cardozo|2559791-3743 |
 
 ## El problema, en una línea
 

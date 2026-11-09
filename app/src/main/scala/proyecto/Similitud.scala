@@ -94,11 +94,15 @@ object Similitud {
   }
 
   /** El conjunto de fragmentos del documento: un repetido cuenta una vez. */
-  def huella(d: Documento, k: Int): Huella = ???
+  def huella(d: Documento, k: Int): Huella = {
+    fragmentos(palabrasDoc(d),k).toSet
+  }
 
   /** Una huella por documento del corpus, en el mismo orden. */
-  def huellas(c: Corpus, k: Int): Vector[Huella] = ???
+  def huellas(c: Corpus, k: Int): Vector[Huella] = {
+    c.map(doc=>huella(doc,k))
 
+  }
   /**
    * Índice de Jaccard de dos huellas, el tamaño de la intersección sobre el de
    * la unión. Dos huellas vacías dan cero y no dividen por cero.
