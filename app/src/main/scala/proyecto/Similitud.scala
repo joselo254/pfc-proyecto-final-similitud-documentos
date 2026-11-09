@@ -78,11 +78,12 @@ object Similitud {
   def normalizar(texto: String): Vector[String] ={
     texto.toLowerCase().replaceAll("[^\\p{L}\\p{Nd}]", " ").split(" ").toVector.filter(_.nonEmpty)
   }
-
   /**
    * Los t - k + 1 fragmentos de k palabras consecutivas, en el orden en que
    * aparecen; el vector vacío si el documento tiene menos de k palabras.
    */
+    //si ts es menor a k o k<1 devuelve vector vacio sino se hace una llamada recursiva
+    //para tomar un fragmento de longitud k
   def fragmentos(ts: Vector[String], k: Int): Vector[Fragmento] = {
     if(ts.length<k|| k<1){
       Vector()
@@ -92,26 +93,36 @@ object Similitud {
        fragmentito+:fragmentos(ts.tail,k)
     }
   }
-
   /** El conjunto de fragmentos del documento: un repetido cuenta una vez. */
+    //crea una huella, es decir un conjunto de fragmentos por cada documento,cada fragmento es distinto
   def huella(d: Documento, k: Int): Huella = {
     fragmentos(palabrasDoc(d),k).toSet
   }
-
   /** Una huella por documento del corpus, en el mismo orden. */
+    //crea una huella para los distintos documentos
   def huellas(c: Corpus, k: Int): Vector[Huella] = {
     c.map(doc=>huella(doc,k))
-
   }
   /**
    * Índice de Jaccard de dos huellas, el tamaño de la intersección sobre el de
    * la unión. Dos huellas vacías dan cero y no dividen por cero.
    */
-  def jaccard(h1: Huella, h2: Huella): Double = ???
-
+    //si (h1 union h2)==(0,0)=>0.0 sino va a retornar la cantidad de huellas que tienen en comun
+  def jaccard(h1: Huella, h2: Huella): Double = {
+    val union= h1.union(h2).size.toDouble
+    val interseccion= h1.intersect(h2).size.toDouble
+    if (union==0.0)0.0
+    else interseccion/union
+  }
   /** Las n (n - 1) / 2 parejas (i, j) con i < j, en orden. */
-  def parejas(n: Int): Vector[Pareja] = ???
-
+    //dos generadores para comaprar n documentos ,para no comparar el mismo indice el segundo generador
+    //empieza con el anterior +1
+  def parejas(n: Int): Vector[Pareja] ={
+    (for{
+      i<-0 until n
+      j<-(i+1) until n
+    } yield (i,j)).toVector
+  }
   /** La similitud de cada pareja que se le pase, en el mismo orden. */
   def similitudes(hs: Vector[Huella], ps: Vector[Pareja]): Vector[Medicion] = ???
 

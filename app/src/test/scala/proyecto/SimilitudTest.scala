@@ -203,5 +203,51 @@ class SimilitudTest extends AnyFunSuite {
     val hs = huellas(Vector(doc, doc), 2)
     assert(hs(0) == hs(1))
   }
+  //Pruebas funcion N°5 adicionales ----
+  test("jaccard: huellas iguales dan 1.0") {
+    val h = Set(Vector("el", "gato"))
+    assert(math.abs(jaccard(h, h) - 1.0) < eps)
+  }
+  test("jaccard: huellas distintas dan 0.0") {
+    val h1 = Set(Vector("el", "gato"))
+    val h2 = Set(Vector("la", "perra"))
+    assert(math.abs(jaccard(h1, h2) - 0.0) < eps)
+  }
+  test("jaccard: huellas vacias dan 0.0") {
+    val vacia: Huella = Set()
+    assert(math.abs(jaccard(vacia, vacia) - 0.0) < eps)
+  }
+  test("jaccard: una huella vacia y otra no dan 0.0") {
+    val h = Set(Vector("hola", "mundo"))
+    val vacia: Huella = Set()
+    assert(math.abs(jaccard(h, vacia) - 0.0) < eps)
+  }
+  test("jaccard: coincidencia parcial") {
+    val h1 = Set(Vector("a", "b"), Vector("b", "c"))
+    val h2 = Set(Vector("b", "c"), Vector("c", "d"))
+    assert(math.abs(jaccard(h1, h2) - (1.0 / 3.0)) < eps)
+  }
+
+  //Pruebas funcion N°6 adicionales ----
+  test("parejas: n = 0 no genera ninguna pareja") {
+    assert(parejas(0).isEmpty)
+  }
+  test("parejas: n = 1 no genera parejas porque se necesitan al menos dos documentos") {
+    assert(parejas(1).isEmpty)
+  }
+  test("parejas: n = 2 genera exactamente una pareja (0, 1)") {
+    assert(parejas(2) == Vector((0, 1)))
+  }
+  test("parejas: n = 3 genera tres combinaciones posibles") {
+    // Documentos 0 con 1, 0 con 2, y 1 con 2
+    assert(parejas(3) == Vector((0, 1), (0, 2), (1, 2)))
+  }
+  test("parejas: cumple con la fórmula n * (n - 1) / 2 para n = 5") {
+    // Para n = 5 debe generar 10 parejas en total
+    assert(parejas(5).length == 10)
+    // Verificamos el primer y el último elemento de la secuencia
+    assert(parejas(5).head == (0, 1))
+    assert(parejas(5).last == (3, 4))
+  }
 
 }
