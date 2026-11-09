@@ -238,6 +238,7 @@ class SimilitudTest extends AnyFunSuite {
   test("parejas: n = 2 genera exactamente una pareja (0, 1)") {
     assert(parejas(2) == Vector((0, 1)))
   }
+
   test("parejas: n = 3 genera tres combinaciones posibles") {
     // Documentos 0 con 1, 0 con 2, y 1 con 2
     assert(parejas(3) == Vector((0, 1), (0, 2), (1, 2)))
