@@ -96,6 +96,7 @@ class SimilitudTest extends AnyFunSuite {
     assert(detectarDirecto(c1, 3, 0.2, 5) == detectarConIndice(c1, 3, 0.2, 5))
     assert(detectarDirecto(c2, 3, 0.3, 5) == detectarConIndice(c2, 3, 0.3, 5))
   }
+
   //Pruebas funcion N°1 adicionales ----
   test("normalizar: texto mixto con mayúsculas, tildes y signos de puntuación") {
     val texto = "Mi Tio Esta ..¡en el sofá!"
@@ -143,6 +144,7 @@ class SimilitudTest extends AnyFunSuite {
     val ts = Vector("uno", "dos", "tres")
     assert(fragmentos(ts, 1) == Vector(Vector("uno"), Vector("dos"), Vector("tres")))
   }
+
   //Pruebas funcion N°3 adicionales ----
   test("huella: elimina fragmentos duplicados si el texto repite secuencias") {
     val doc: Documento = ("doc_rep", Vector("hola", "mundo", "hola", "mundo"))
@@ -175,6 +177,7 @@ class SimilitudTest extends AnyFunSuite {
     val h = huella(doc, 2)
     assert(h.size == 4)
   }
+
   //Pruebas funcion N°4 adicionales ----
   test("huellas: corpus vacío da vector vacío") {
     assert(huellas(Vector(), 3).isEmpty)
@@ -202,6 +205,7 @@ class SimilitudTest extends AnyFunSuite {
     val hs = huellas(Vector(doc, doc), 2)
     assert(hs(0) == hs(1))
   }
+
   //Pruebas funcion N°5 adicionales ----
   test("jaccard: huellas iguales dan 1.0") {
     val h = Set(Vector("el", "gato"))
@@ -237,22 +241,18 @@ class SimilitudTest extends AnyFunSuite {
   test("parejas: n = 2 genera exactamente una pareja (0, 1)") {
     assert(parejas(2) == Vector((0, 1)))
   }
-
   test("parejas: n = 3 genera tres combinaciones posibles") {
     // Documentos 0 con 1, 0 con 2, y 1 con 2
     assert(parejas(3) == Vector((0, 1), (0, 2), (1, 2)))
   }
-  test("parejas: cumple con la fórmula n * (n - 1) / 2 para n = 5") {
-    // Para n = 5 debe generar 10 parejas en total
-    assert(parejas(5).length == 10)
-    // Verificamos el primer y el último elemento de la secuencia
-    assert(parejas(5).head == (0, 1))
-    assert(parejas(5).last == (3, 4))
+  test("parejas: cumple con la fórmula n * (n - 1) / 2 para n = 6") {
+    assert(parejas(6).length == 15)
+    assert(parejas(6).head == (0, 1))
+    assert(parejas(6).last == (4, 5))
   }
 
-  // Casos propios para las funciones seleccionadas: al final del archivo y
-  // distintos de las pruebas de contrato y entre sí.
-  test("similitudes calcula una intersección parcial sobre la unión") {
+  //Pruebas funcion N°7 adicionales ----
+  test("similitudes: calcula una intersección parcial sobre la unión") {
     val hs = Vector(
       Set(Vector("a"), Vector("b")),
       Set(Vector("a"), Vector("b"), Vector("c")),
@@ -261,51 +261,52 @@ class SimilitudTest extends AnyFunSuite {
     assert(similitudes(hs, Vector((0, 1))).map(_._3) == Vector(2.0 / 3.0))
   }
 
-  test("similitudes conserva el orden de las parejas recibidas") {
+  test("similitudes: conserva el orden de las parejas recibidas") {
     val hs = Vector(Set(Vector("x")), Set(Vector("x")), Set(Vector("y")))
     assert(similitudes(hs, Vector((1, 2), (0, 1))) ==
       Vector((1, 2, 0.0), (0, 1, 1.0)))
   }
 
-  test("similitudes da uno a dos huellas no vacías idénticas") {
+  test("similitudes: da uno a dos huellas no vacías idénticas") {
     val huella = Set(Vector("gato", "duerme"), Vector("en", "casa"))
     assert(similitudes(Vector(huella, huella), Vector((0, 1))) ==
       Vector((0, 1, 1.0)))
   }
 
-  test("similitudes da cero si ambas huellas están vacías") {
+  test("similitudes: da cero si ambas huellas están vacías") {
     val vacia: Huella = Set.empty
     assert(similitudes(Vector(vacia, vacia), Vector((0, 1))) ==
       Vector((0, 1, 0.0)))
   }
 
-  test("similitudes no produce mediciones sin parejas de entrada") {
+  test("similitudes: no produce mediciones sin parejas de entrada") {
     assert(similitudes(Vector(Set(Vector("a"))), Vector.empty).isEmpty)
   }
 
-  test("indiceInvertido devuelve un mapa vacío para un corpus vacío") {
+  //Pruebas funcion N°8 adicionales ----
+  test("indiceInvertido: devuelve un mapa vacío para un corpus vacío") {
     assert(indiceInvertido(Vector.empty).isEmpty)
   }
 
-  test("indiceInvertido incluye todos los fragmentos de una sola huella") {
+  test("indiceInvertido: incluye todos los fragmentos de una sola huella") {
     val hs = Vector(Set(Vector("a"), Vector("b"), Vector("c")))
     assert(indiceInvertido(hs) ==
       Map(Vector("a") -> Set(0), Vector("b") -> Set(0), Vector("c") -> Set(0)))
   }
 
-  test("indiceInvertido registra publicaciones compartidas por tres documentos") {
+  test("indiceInvertido: registra publicaciones compartidas por tres documentos") {
     val fragmento = Vector("x", "y")
     val hs = Vector(Set(fragmento), Set(fragmento), Set(fragmento))
     assert(indiceInvertido(hs) == Map(fragmento -> Set(0, 1, 2)))
   }
 
-  test("indiceInvertido conserva la posición original tras una huella vacía") {
+  test("indiceInvertido: conserva la posición original tras una huella vacía") {
     val hs = Vector(Set(Vector("primero")), Set.empty[Fragmento], Set(Vector("tercero")))
     assert(indiceInvertido(hs) ==
       Map(Vector("primero") -> Set(0), Vector("tercero") -> Set(2)))
   }
 
-  test("indiceInvertido distingue fragmentos con palabras diferentes") {
+  test("indiceInvertido: distingue fragmentos con palabras diferentes") {
     val hs = Vector(Set(Vector("a", "b")), Set(Vector("a"), Vector("b")))
     assert(indiceInvertido(hs) == Map(
       Vector("a", "b") -> Set(0),
@@ -314,7 +315,8 @@ class SimilitudTest extends AnyFunSuite {
     ))
   }
 
-  test("parejasCandidatas combina dos grupos de documentos independientes") {
+  //Pruebas funcion N°9 adicionales ----
+  test("parejasCandidatas: combina dos grupos de documentos independientes") {
     val indice: Indice = Map(
       Vector("a") -> Set(0, 3, 5),
       Vector("b") -> Set(1, 2, 4)
@@ -323,20 +325,20 @@ class SimilitudTest extends AnyFunSuite {
       Vector((0, 3), (0, 5), (1, 2), (1, 4), (2, 4), (3, 5)))
   }
 
-  test("parejasCandidatas de un índice vacío no produce parejas") {
+  test("parejasCandidatas: de un índice vacío no produce parejas") {
     assert(parejasCandidatas(Map.empty).isEmpty)
   }
 
-  test("parejasCandidatas no crea parejas desde una publicación individual") {
+  test("parejasCandidatas: no crea parejas desde una publicación individual") {
     assert(parejasCandidatas(Map(Vector("aislado") -> Set(4))).isEmpty)
   }
 
-  test("parejasCandidatas genera todas las combinaciones de una publicación") {
+  test("parejasCandidatas: genera todas las combinaciones de una publicación") {
     assert(parejasCandidatas(Map(Vector("grupo") -> Set(3, 0, 2))) ==
       Vector((0, 2), (0, 3), (2, 3)))
   }
 
-  test("parejasCandidatas elimina repeticiones y ordena por posiciones") {
+  test("parejasCandidatas: elimina repeticiones y ordena por posiciones") {
     val indice: Indice = Map(
       Vector("a") -> Set(5, 1, 3),
       Vector("b") -> Set(3, 1),
@@ -346,29 +348,104 @@ class SimilitudTest extends AnyFunSuite {
       Vector((1, 3), (1, 5), (3, 5)))
   }
 
-  test("ranking incluye similitudes iguales al umbral y descarta las inferiores") {
+  //Pruebas funcion N°10 adicionales ----
+  test("ranking: incluye similitudes iguales al umbral y descarta las inferiores") {
     val mediciones = Vector((0, 1, 0.6), (0, 2, 0.59), (1, 2, 0.9))
     assert(ranking(mediciones, 0.6, 10) ==
       Vector((1, 2, 0.9), (0, 1, 0.6)))
   }
 
-  test("ranking desempata por las posiciones de las parejas") {
+  test("ranking: desempata por las posiciones de las parejas") {
     val mediciones = Vector((2, 3, 0.7), (0, 2, 0.7), (0, 1, 0.7))
     assert(ranking(mediciones, 0.0, 10) ==
       Vector((0, 1, 0.7), (0, 2, 0.7), (2, 3, 0.7)))
   }
 
-  test("ranking con tope uno devuelve solo la similitud más alta") {
-    val mediciones = Vector((0, 1, 0.4), (0, 2, 0.1), (1, 2, 0.9))
-    assert(ranking(mediciones, 0.0, 1) == Vector((1, 2, 0.9)))
+  test("ranking: con tope uno devuelve solo la similitud más alta") {
+    val mediciones = Vector((0, 2, 0.3), (1, 2, 0.8), (0, 1, 0.5))
+    assert(ranking(mediciones, 0.0, 1) == Vector((1, 2, 0.8)))
   }
 
-  test("ranking no devuelve resultados si no hay mediciones") {
+  test("ranking: no devuelve resultados si no hay mediciones") {
     assert(ranking(Vector.empty, 0.0, 5).isEmpty)
   }
 
-  test("ranking con tope cero devuelve un vector vacío") {
+  test("ranking: con tope cero devuelve un vector vacío") {
     assert(ranking(Vector((0, 1, 0.8)), 0.0, 0).isEmpty)
   }
 
+  //Pruebas funcion N°11 adicionales ----
+  val corpusA: Corpus = Vector(
+    ("a0", Vector("a", "b", "c", "d")),
+    ("a1", Vector("a", "b", "c", "e")),
+    ("a2", Vector("x", "y", "z")),
+    ("a3", Vector("a", "b", "c", "d"))
+  )
+
+  val corpusB: Corpus = Vector(
+    ("b0", Vector("uno", "dos", "tres", "cuatro", "cinco")),
+    ("b1", Vector("uno", "dos", "tres", "cuatro", "seis")),
+    ("b2", Vector("tres", "cuatro", "cinco", "seis", "siete")),
+    ("b3", Vector("otro", "texto", "sin", "relacion", "alguna"))
+  )
+
+  test("detectarDirecto: ordena por similitud y rompe empates por posición") {
+    assert(detectarDirecto(corpusA, 2, 0.5, 10) ==
+      Vector((0, 3, 1.0), (0, 1, 0.5), (1, 3, 0.5)))
+  }
+
+  test("detectarDirecto: trunca el ranking al tope p") {
+    assert(detectarDirecto(corpusA, 2, 0.5, 2) ==
+      Vector((0, 3, 1.0), (0, 1, 0.5)))
+  }
+
+  test("detectarDirecto: el umbral es inclusivo y deja solo las copias exactas") {
+    assert(detectarDirecto(corpusA, 2, 1.0, 10) == Vector((0, 3, 1.0)))
+  }
+
+  test("detectarDirecto: con umbral 0.0 aparecen también las parejas de similitud cero") {
+    assert(detectarDirecto(corpusA, 2, 0.0, 10) ==
+      Vector((0, 3, 1.0), (0, 1, 0.5), (1, 3, 0.5),
+        (0, 2, 0.0), (1, 2, 0.0), (2, 3, 0.0)))
+  }
+
+  test("detectarDirecto: con copias exactas, las parejas (i, copia de i) quedan al frente") {
+    val c = corpusConCopias(6, 60, 1000, 3, 1.0)
+    val r = detectarDirecto(c, 4, 0.5, 10)
+    assert(r.map(m => (m._1, m._2)) == Vector((0, 6), (1, 7), (2, 8)))
+    assert(r.forall(_._3 == 1.0))
+  }
+
+  //Pruebas funcion N°12 adicionales ----
+  test("detectarConIndice: devuelve las dos parejas candidatas con su similitud") {
+    assert(detectarConIndice(corpusB, 3, 0.2, 10) ==
+      Vector((0, 1, 0.5), (0, 2, 0.2)))
+  }
+
+  test("detectarConIndice: un umbral más alto deja fuera la pareja de 0.2") {
+    assert(detectarConIndice(corpusB, 3, 0.3, 10) == Vector((0, 1, 0.5)))
+  }
+
+  test("detectarConIndice: sin fragmentos en común no hay candidatas ni ranking") {
+    val c: Corpus = Vector(
+      ("x0", Vector("a", "b", "c")),
+      ("x1", Vector("d", "e", "f"))
+    )
+    assert(detectarConIndice(c, 2, 0.1, 5).isEmpty)
+  }
+
+  test("detectarConIndice: corpus vacío, de un documento o de documentos más cortos que k") {
+    assert(detectarConIndice(Vector.empty, 3, 0.1, 5).isEmpty)
+    assert(detectarConIndice(Vector(("solo", Vector("a", "b", "c"))), 2, 0.1, 5).isEmpty)
+    val cortos: Corpus = Vector(("c0", Vector("a", "b")), ("c1", Vector("a", "b")))
+    assert(detectarConIndice(cortos, 3, 0.1, 5).isEmpty)
+  }
+
+  test("detectarConIndice: con copias al 50 % las copias quedan al frente y coincide con el directo") {
+    val c = corpusConCopias(8, 60, 1000, 2, 0.5)
+    val r = detectarConIndice(c, 4, 0.2, 10)
+    assert(r.map(m => (m._1, m._2)).toSet == Set((0, 8), (1, 9)))
+    assert(r.forall(m => m._3 > 0.3 && m._3 < 0.35))
+    assert(r == detectarDirecto(c, 4, 0.2, 10))
+  }
 }
